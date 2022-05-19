@@ -1,0 +1,4 @@
+__pycache__/
+sql_app/__pycache__/
+db/secret.json
+db/googleapi.json
