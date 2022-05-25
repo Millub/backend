@@ -6,7 +6,7 @@ from fastapi import APIRouter, Request, File, UploadFile, Depends, HTTPException
 from db.dals.func_dto import FuncDTO
 from routers.dependencies import get_func_dto
 
-from db.schemas.response import StoreModel, StoreDetailModel
+from db.schemas.response import StoreModel, StoreDetailModel, StoreDetailListModel
 from db.schemas.schemas import StoreSchemas
 
 router = APIRouter(
@@ -47,5 +47,21 @@ async def get_store_detail(
     func_dto: FuncDTO = Depends(get_func_dto)):
 
     response = await func_dto.get_store_detail(store_idx, request.client.host)
+
+    return response
+
+
+@router.get("/store/detail/list",
+    response_model=StoreDetailListModel,
+    description="""
+    군장병 우대업소 상품종류 리스트 확인
+
+    store_idx(int): 우대업소 식별정보
+    """)
+async def get_store_detail_list(
+    store_idx: int,
+    func_dto: FuncDTO = Depends(get_func_dto)):
+
+    response = await func_dto.get_store_detail_list(store_idx)
 
     return response

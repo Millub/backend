@@ -39,6 +39,5 @@ async def startup():
         #await conn.run_sync(Base.metadata.drop_all)
         await conn.run_sync(Base.metadata.create_all)
 
-
 if __name__ == "__main__":
     uvicorn.run('main:app', host="0.0.0.0", port=8000, reload=True, workers=3)

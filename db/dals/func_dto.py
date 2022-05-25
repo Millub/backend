@@ -64,7 +64,7 @@ class FuncDTO():
                 Store.store_name.like(f'%{s.name_keyword}%'),
                 Store.store_type.in_(s.store_type)
             ).order_by(
-                Store.store_idx.desc()
+                Store.store_idx.asc()
             ).limit(20)
         data = await self.query(statement)
 
@@ -112,6 +112,15 @@ class FuncDTO():
         response['data']['store_name'] = data[0]['store_name']
         response['data']['store_address'] = data[0]['store_address']
         response['data']['store_number'] = data[0]['store_number']
+                
+        statement = select(
+            StoreDetail.detail_idx
+            ).where(
+            StoreDetail.store_idx == data[0]['store_idx']
+        )
+        detail = await self.query(statement)
+
+        response['data']['store_detail_cnt'] = len(detail)
 
         # 조회수 로직
         statement = select(
@@ -136,5 +145,37 @@ class FuncDTO():
             except:
                 self.session.rollback()
                 raise exception_40601
+
+        return response
+
+
+    # 군장병 우대업소 상품종류 리스트 확인
+    # GET /function/store/detail/list?store_idx={int}
+    async def get_store_detail_list(self, store_idx):
+
+        response = {
+            "result":"success",
+            "data": {}
+        }
+
+        response['data']['detail_list'] = []
+                
+        statement = select(
+            StoreDetail.detail_idx,
+            StoreDetail.detail_name,
+            StoreDetail.detail_price
+            ).where(
+            StoreDetail.store_idx == store_idx
+        )
+        detail = await self.query(statement)
+
+        if detail:
+            for d in detail:
+                detail_list = {}
+                detail_list['detail_idx'] = d['detail_idx']
+                detail_list['detail_name'] = d['detail_name']
+                detail_list['detail_price'] = d['detail_price']
+
+                response['data']['detail_list'].append(detail_list)
 
         return response
